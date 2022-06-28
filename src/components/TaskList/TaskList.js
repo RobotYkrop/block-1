@@ -16,6 +16,7 @@ export default class TaskList extends React.Component {
     completedTask: PropTypes.func,
     items: PropTypes.arrayOf(PropTypes.object).isRequired,
   };
+
   render() {
     const { items, onEdit, deleteTask, completedTask } = this.props;
     const el = items.map((item) => {
