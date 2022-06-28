@@ -32,7 +32,7 @@
     "*.(js|jsx)": [
       "npm run lint:fix",
       "npm run format",
-      "git add"
+      "git add ."
     ]
   },
   "browserslist": {
