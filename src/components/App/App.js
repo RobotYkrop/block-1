@@ -1,5 +1,6 @@
 import './App.css';
 import React from 'react';
+import uuid from 'react-uuid';
 
 import AppHeader from '../AppHeader/AppHeader';
 import NewTaskForm from '../NewTaskForm/NewTaskForm';
@@ -9,8 +10,7 @@ import TaskList from '../TaskList/TaskList';
 export default class App extends React.Component {
   constructor() {
     super();
-    this.maxId = 100;
-
+    this.maxId;
     this.state = {
       items: [],
       filter: 'all',
@@ -29,9 +29,20 @@ export default class App extends React.Component {
   createTask = (label) => {
     return {
       label,
-      id: this.maxId++,
+      id: (this.maxId = uuid()),
       time: Date.now(),
     };
+  };
+
+  addTask = (label) => {
+    const newTask = this.createTask(label);
+    this.setState(({ items }) => {
+      const newArr = [...items, newTask];
+
+      return {
+        items: newArr,
+      };
+    });
   };
 
   deleteTask = (id) => {
@@ -44,18 +55,6 @@ export default class App extends React.Component {
 
       return {
         items: copyItems,
-      };
-    });
-  };
-
-  addTask = (label) => {
-    const newTask = this.createTask(label);
-
-    this.setState(({ items }) => {
-      const newArr = [...items, newTask];
-
-      return {
-        items: newArr,
       };
     });
   };
@@ -119,6 +118,8 @@ export default class App extends React.Component {
               deleteTask={this.deleteTask}
               completedTask={this.completedTask}
               onEdit={this.onEdit}
+              offEdit={this.offEdit}
+              addTask={this.addTask}
             />
             <Footer
               filter={filter}

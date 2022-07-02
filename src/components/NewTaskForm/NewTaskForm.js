@@ -16,10 +16,12 @@ export default class NewTaskForm extends React.Component {
   };
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.addTask(this.state.label);
-    this.setState({
-      label: '',
-    });
+    if (this.state.label.length > 0) {
+      this.props.addTask(this.state.label);
+      this.setState({
+        label: '',
+      });
+    }
   };
 
   render() {
@@ -32,7 +34,6 @@ export default class NewTaskForm extends React.Component {
           onChange={this.valueTask}
           value={this.state.label}
         />
-        <button className="task-item-add">Add</button>
       </form>
     );
   }
