@@ -96,6 +96,7 @@ export default class App extends React.Component {
 
   clearTask = () => {
     const items = this.state.items.filter((i) => !i.completed);
+    localStorage.setItem('task', JSON.stringify(items));
     this.setState({ items });
   };
 
