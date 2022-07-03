@@ -11,7 +11,7 @@ export default class NewTaskForm extends React.Component {
 
   valueTask = (e) => {
     this.setState({
-      label: e.target.value,
+      label: e.target.value.replace(/^[ \t]+$/gm, ''),
     });
   };
   onSubmit = (e) => {
