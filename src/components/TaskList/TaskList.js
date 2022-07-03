@@ -5,6 +5,12 @@ import PropTypes from 'prop-types';
 import Task from '../Task/Task';
 
 export default class TaskList extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      label: '',
+    };
+  }
   static defaultProps = {
     onEdit: () => {},
     deleteTask: () => {},
@@ -17,7 +23,7 @@ export default class TaskList extends React.Component {
     items: PropTypes.arrayOf(PropTypes.object).isRequired,
   };
   render() {
-    const { items, onEdit, deleteTask, completedTask } = this.props;
+    const { items, onEdit, Edit, deleteTask, completedTask, addTask } = this.props;
 
     const el = items.map((item) => {
       const { id, ...label } = item;
@@ -29,6 +35,8 @@ export default class TaskList extends React.Component {
             deleteTask={() => deleteTask(id)}
             completedTask={() => completedTask(id)}
             onEdit={() => onEdit(id)}
+            Edit={() => Edit(id)}
+            addTask={addTask}
           />
         </li>
       );

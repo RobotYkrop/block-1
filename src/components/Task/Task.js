@@ -10,23 +10,24 @@ export default class Task extends React.Component {
       label: '',
     };
   }
+
   render() {
     const { label, deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
+
+    // Не понимаю, что делать, не понимаю как отредактировать запись
+
     const onChange = (e) => {
       console.log(e.target.value);
-      return {
-        [e.target.label]: e.target.value,
-      };
+      this.setState({
+        label: e.target.value,
+      });
     };
 
     const formSubmit = (e) => {
       e.preventDefault();
-      this.setState({
-        label: e.target.value,
-        editing: false,
-      });
-      console.log(editing);
+      this.setState({ label });
     };
+
     const currentTime = Date.now();
 
     const date = formatDistanceToNow(time, currentTime);

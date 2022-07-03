@@ -10,7 +10,6 @@ import TaskList from '../TaskList/TaskList';
 export default class App extends React.Component {
   constructor() {
     super();
-    this.maxId;
     this.state = {
       items: [],
       filter: 'all',
@@ -29,16 +28,19 @@ export default class App extends React.Component {
   createTask = (label) => {
     return {
       label,
-      id: (this.maxId = uuid()),
+      id: uuid(),
       time: Date.now(),
     };
   };
-
+  componentDidMount() {
+    const items = JSON.parse(localStorage.getItem('task')) || [];
+    this.setState({ items });
+  }
   addTask = (label) => {
     const newTask = this.createTask(label);
     this.setState(({ items }) => {
       const newArr = [...items, newTask];
-
+      localStorage.setItem('task', JSON.stringify(newArr));
       return {
         items: newArr,
       };
@@ -52,7 +54,7 @@ export default class App extends React.Component {
       const [...copyItems] = items;
 
       copyItems.splice(idx, 1);
-
+      localStorage.setItem('task', JSON.stringify(copyItems));
       return {
         items: copyItems,
       };
@@ -103,7 +105,23 @@ export default class App extends React.Component {
     const totalTask = items.length - items.filter((el) => el.completed).length;
 
     const visibleItems = this.filterTask(items, filter);
+    let emptyTask;
 
+    if (items.length === 0) {
+      emptyTask = <p className="emptyTask">Задач нет</p>;
+    } else {
+      emptyTask = (
+        <TaskList
+          time={time}
+          items={visibleItems}
+          deleteTask={this.deleteTask}
+          completedTask={this.completedTask}
+          onEdit={this.onEdit}
+          addTask={this.addTask}
+          createTask={this.createTask}
+        />
+      );
+    }
     return (
       <div>
         <section className="todoapp">
@@ -112,15 +130,7 @@ export default class App extends React.Component {
             <NewTaskForm addTask={this.addTask} />
           </header>
           <section className="main">
-            <TaskList
-              time={time}
-              items={visibleItems}
-              deleteTask={this.deleteTask}
-              completedTask={this.completedTask}
-              onEdit={this.onEdit}
-              offEdit={this.offEdit}
-              addTask={this.addTask}
-            />
+            {emptyTask}
             <Footer
               filter={filter}
               totalTask={totalTask}

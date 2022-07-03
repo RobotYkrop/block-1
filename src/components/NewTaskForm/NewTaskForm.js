@@ -23,7 +23,6 @@ export default class NewTaskForm extends React.Component {
       });
     }
   };
-
   render() {
     return (
       <form onSubmit={this.onSubmit}>
