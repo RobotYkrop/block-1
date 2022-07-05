@@ -7,26 +7,32 @@ export default class Task extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      label: '',
+      label: this.props.label,
     };
   }
 
-  render() {
-    const { label, deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
-
-    // Не понимаю, что делать, не понимаю как отредактировать запись
-
-    const onChange = (e) => {
-      console.log(e.target.value);
-      this.setState({
+  onChange = (e) => {
+    this.setState(() => {
+      return {
         label: e.target.value,
-      });
-    };
+      };
+    });
+  };
 
-    const formSubmit = (e) => {
-      e.preventDefault();
-      this.setState({ label });
-    };
+  formSubmit = (e) => {
+    e.preventDefault();
+    this.props.onEdit(this.props.label);
+    if (this.props.label.length > 0) {
+      this.setState(() => {
+        return {
+          label: this.state.label,
+        };
+      });
+    }
+  };
+
+  render() {
+    const { deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
 
     const currentTime = Date.now();
 
@@ -41,7 +47,7 @@ export default class Task extends React.Component {
         <div className="view">
           <input className="toggle" type="checkbox" onChange={completedTask} />
           <label>
-            <span className="description">{label}</span>
+            <span className="description">{this.state.label}</span>
             <span className="created">created {date} ago</span>
           </label>
           <button className="icon icon-edit" onClick={onEdit} />
@@ -50,8 +56,8 @@ export default class Task extends React.Component {
       );
     } else {
       elem = (
-        <form onSubmit={formSubmit}>
-          <input type="text" className="edit" defaultValue={label} onChange={onChange} />
+        <form onSubmit={this.formSubmit}>
+          <input type="text" className="edit" defaultValue={this.state.label} onChange={this.onChange} />
         </form>
       );
     }

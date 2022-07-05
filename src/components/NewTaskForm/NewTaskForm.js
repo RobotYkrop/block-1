@@ -14,6 +14,7 @@ export default class NewTaskForm extends React.Component {
       label: e.target.value.replace(/^[ \t]+$/gm, ''),
     });
   };
+
   onSubmit = (e) => {
     e.preventDefault();
     if (this.state.label.length > 0) {
@@ -23,6 +24,7 @@ export default class NewTaskForm extends React.Component {
       });
     }
   };
+
   render() {
     return (
       <form onSubmit={this.onSubmit}>
