@@ -61,8 +61,9 @@ export default class App extends React.Component {
     });
   };
 
-  onEdit = (id) => {
+  onEdit = (id, label) => {
     this.setState(({ items }) => {
+      this.createTask(label);
       const idx = items.findIndex((el) => el.id === id);
       const old = items[idx];
 

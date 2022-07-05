@@ -24,7 +24,6 @@ export default class Task extends React.Component {
     this.props.onEdit(this.props.label);
     if (this.props.label.length > 0) {
       this.setState(() => {
-        localStorage.setItem('task', JSON.stringify(this.state.label));
         return {
           label: this.state.label,
         };
