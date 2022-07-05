@@ -27,7 +27,7 @@ export default class TaskList extends React.Component {
             {...label}
             deleteTask={() => deleteTask(id)}
             completedTask={() => completedTask(id)}
-            onEdit={() => onEdit(id)}
+            onEdit={() => onEdit(id, label)}
           />
         </li>
       );

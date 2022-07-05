@@ -2,8 +2,8 @@ import './NewTaskForm.css';
 import React from 'react';
 
 export default class NewTaskForm extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       label: '',
     };

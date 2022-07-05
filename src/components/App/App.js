@@ -107,7 +107,7 @@ export default class App extends React.Component {
   };
 
   render() {
-    const { items, filter, time } = this.state;
+    const { items, filter } = this.state;
 
     const totalTask = items.length - items.filter((el) => el.completed).length;
 
@@ -119,7 +119,6 @@ export default class App extends React.Component {
     } else {
       emptyTask = (
         <TaskList
-          time={time}
           items={visibleItems}
           deleteTask={this.deleteTask}
           completedTask={this.completedTask}

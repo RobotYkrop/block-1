@@ -21,7 +21,7 @@ export default class Task extends React.Component {
 
   formSubmit = (e) => {
     e.preventDefault();
-    this.props.onEdit(this.props.label);
+    this.props.onEdit(this.state.label);
     if (this.props.label.length > 0) {
       this.setState(() => {
         return {
