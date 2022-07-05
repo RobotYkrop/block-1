@@ -24,6 +24,7 @@ export default class Task extends React.Component {
     this.props.onEdit(this.props.label);
     if (this.props.label.length > 0) {
       this.setState(() => {
+        localStorage.setItem('task', JSON.stringify(this.state.label));
         return {
           label: this.state.label,
         };
@@ -33,7 +34,6 @@ export default class Task extends React.Component {
 
   render() {
     const { deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
-
     const currentTime = Date.now();
 
     const date = formatDistanceToNow(time, currentTime);

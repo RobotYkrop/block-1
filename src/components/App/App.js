@@ -63,9 +63,13 @@ export default class App extends React.Component {
 
   onEdit = (id) => {
     this.setState(({ items }) => {
-      localStorage.setItem('task', JSON.stringify(items));
+      const idx = items.findIndex((el) => el.id === id);
+      const old = items[idx];
+
+      const newArr = [{ ...old, editing: !old.editing }];
+      localStorage.setItem('task', JSON.stringify(newArr));
       return {
-        items: this.toggleProperty(items, id, 'editing'),
+        items: newArr,
       };
     });
   };
