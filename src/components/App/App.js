@@ -64,7 +64,7 @@ export default class App extends React.Component {
   };
 
   onEdit = (id) => {
-    return this.setState(({ items }) => {
+    this.setState(({ items }) => {
       const idx = items.findIndex((el) => el.id === id);
       const old = items[idx];
       const newArr = { ...old, editing: !old.editing };

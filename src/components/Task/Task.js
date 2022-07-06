@@ -21,20 +21,16 @@ export default class Task extends React.Component {
 
   formSubmit = (e) => {
     e.preventDefault();
+    this.props.onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
-
     data = data.map((value) => {
-      if (value.label === this.props.label) {
-        return {
-          ...value,
-          label: this.state.label,
-        };
-      }
-      return value;
+      return {
+        ...value,
+        label: this.state.label,
+        editing: false,
+      };
     });
-
     localStorage.setItem('task', JSON.stringify(data));
-    this.props.onEdit(this.state.label);
   };
 
   render() {
