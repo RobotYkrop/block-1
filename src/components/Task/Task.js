@@ -23,13 +23,15 @@ export default class Task extends React.Component {
     e.preventDefault();
     this.props.onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
-    data = data.map((value) => {
-      return {
-        ...value,
-        label: this.state.label,
-        editing: false,
-      };
-    });
+    if (this.state.label.length > 0) {
+      data = data.map((value) => {
+        return {
+          ...value,
+          label: this.state.label,
+          editing: false,
+        };
+      });
+    }
     localStorage.setItem('task', JSON.stringify(data));
   };
 
