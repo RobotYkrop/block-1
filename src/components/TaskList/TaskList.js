@@ -17,7 +17,7 @@ export default class TaskList extends React.Component {
     items: PropTypes.arrayOf(PropTypes.object).isRequired,
   };
   render() {
-    const { items, onEdit, deleteTask, completedTask } = this.props;
+    const { items, deleteTask, completedTask, onEdit } = this.props;
 
     const el = items.map((item) => {
       const { id, ...label } = item;
@@ -27,7 +27,7 @@ export default class TaskList extends React.Component {
             {...label}
             deleteTask={() => deleteTask(id)}
             completedTask={() => completedTask(id)}
-            onEdit={() => onEdit(id, label)}
+            onEdit={() => onEdit(id)}
           />
         </li>
       );

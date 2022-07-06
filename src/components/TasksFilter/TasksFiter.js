@@ -1,7 +1,7 @@
 import './TasksFilter.css';
 import React from 'react';
 
-export const ACTIONS = {
+export const Actions = {
   ALL: 'All',
   ACTIVE: 'Active',
   COMPLETED: 'Completed',
@@ -21,10 +21,9 @@ export default class TasksFiter extends React.Component {
     const { filter, onChangeFilter } = this.props;
 
     const buttons = this.buttons.map(({ name, label }) => {
-      const isActive = filter === ACTIONS;
-      const clazz = isActive ? 'selected' : '';
+      filter === Actions;
       return (
-        <li key={name} className={clazz} onClick={() => onChangeFilter(name)}>
+        <li key={name} onClick={() => onChangeFilter(name)}>
           <button>{label}</button>
         </li>
       );

@@ -29,7 +29,7 @@
     border-color: rgba(175, 47, 47, 0.1);
 }
 
-.filters .selected {
+.filters li:active button {
     border-color: rgba(175, 47, 47, 0.2);
     color: darkseagreen;
 }

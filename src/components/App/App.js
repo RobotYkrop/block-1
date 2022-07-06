@@ -32,10 +32,12 @@ export default class App extends React.Component {
       time: Date.now(),
     };
   };
+
   componentDidMount() {
     const items = JSON.parse(localStorage.getItem('task')) || [];
     this.setState({ items });
   }
+
   addTask = (label) => {
     const newTask = this.createTask(label);
     this.setState(({ items }) => {
@@ -61,16 +63,14 @@ export default class App extends React.Component {
     });
   };
 
-  onEdit = (id, label) => {
-    this.setState(({ items }) => {
-      this.createTask(label);
+  onEdit = (id) => {
+    return this.setState(({ items }) => {
       const idx = items.findIndex((el) => el.id === id);
       const old = items[idx];
-
-      const newArr = [{ ...old, editing: !old.editing }];
-      localStorage.setItem('task', JSON.stringify(newArr));
+      const newArr = { ...old, editing: !old.editing };
+      const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
       return {
-        items: newArr,
+        items: arr,
       };
     });
   };
@@ -122,8 +122,8 @@ export default class App extends React.Component {
           items={visibleItems}
           deleteTask={this.deleteTask}
           completedTask={this.completedTask}
-          onEdit={this.onEdit}
           addTask={this.addTask}
+          onEdit={this.onEdit}
           createTask={this.createTask}
         />
       );
