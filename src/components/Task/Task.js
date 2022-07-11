@@ -19,7 +19,9 @@ export default class Task extends React.Component {
   };
 
   startTimer = () => {
-    this.setState({ timing: setInterval(this.countDown, 1000) });
+    this.setState(() => {
+      return { timing: setInterval(this.countDown, 1000) };
+    });
   };
 
   countDown = () => {
@@ -132,7 +134,6 @@ export default class Task extends React.Component {
         </form>
       );
     }
-
     return <div className={classing}>{elem}</div>;
   }
 }
