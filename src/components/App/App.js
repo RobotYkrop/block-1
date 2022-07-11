@@ -13,6 +13,7 @@ export default class App extends React.Component {
     this.state = {
       items: [],
       filter: 'all',
+      timer: 0,
     };
   }
 
@@ -25,21 +26,24 @@ export default class App extends React.Component {
     return [...arr.slice(0, idx), newArr, ...arr.slice(idx + 1)];
   };
 
-  createTask = (label) => {
-    return {
-      label,
-      id: uuid(),
-      time: Date.now(),
-    };
-  };
-
   componentDidMount() {
     const items = JSON.parse(localStorage.getItem('task')) || [];
     this.setState({ items });
   }
 
-  addTask = (label) => {
-    const newTask = this.createTask(label);
+  createTask = (label, minutes, seconds) => {
+    return {
+      label,
+      id: uuid(),
+      time: Date.now(),
+      timing: {},
+      minutes,
+      seconds,
+    };
+  };
+
+  addTask = (label, minutes, seconds) => {
+    const newTask = this.createTask(label, minutes, seconds);
     this.setState(({ items }) => {
       const newArr = [...items, newTask];
       localStorage.setItem('task', JSON.stringify(newArr));
