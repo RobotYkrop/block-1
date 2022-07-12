@@ -50,7 +50,12 @@ export default class Task extends React.Component {
     localStorage.setItem('task', JSON.stringify(data));
   };
 
-  stopTimer = () => {
+  stopInputTimer = () => {
+    this.props.completedTask();
+    clearInterval(this.state.timing);
+  };
+
+  stopButtonTimer = () => {
     clearInterval(this.state.timing);
   };
 
@@ -95,7 +100,7 @@ export default class Task extends React.Component {
   };
 
   render() {
-    const { deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
+    const { deleteTask, onEdit, completed, editing, time } = this.props;
 
     const { label, minutes, seconds } = this.state;
 
@@ -110,12 +115,12 @@ export default class Task extends React.Component {
     if (!editing) {
       elem = (
         <div className="view">
-          <input className="toggle" type="checkbox" onChange={completedTask} />
+          <input className="toggle" type="checkbox" onChange={this.stopInputTimer} />
           <div className="label">
             <span className="description">{label}</span>
             <div className="timer">
               <button className="icon icon-play" onClick={this.startTimer} />
-              <button className="icon icon-pause" onClick={this.stopTimer} />
+              <button className="icon icon-pause" onClick={this.stopButtonTimer} />
               <button className="icon icon-reset" onClick={this.resetTimer} />
               <span>
                 {minutes}:{seconds}
