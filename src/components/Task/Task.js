@@ -5,17 +5,12 @@ import classNames from 'classnames';
 import './Task.css';
 import { Context } from '../TodoContext/Context';
 
-const Task = () => {
-  const { deleteTask, onEdit, completedTask, completed, editing, time } = useContext(Context);
-  const [label, setLabel] = useState({
-    // label: this.props.label,
-  });
-  const [seconds, setSeconds] = useState({
-    // seconds: this.props.seconds,
-  });
-  const [minutes, setMinutes] = useState({
-    // minutes: this.props.minutes,
-  });
+const Task = ({ label, seconds, minutes, time }) => {
+  const { deleteTask, onEdit, completedTask, completed, editing } = useContext(Context);
+  const [lab, setLabel] = useState(label);
+  const [sec, setSeconds] = useState(seconds);
+  const [min, setMinutes] = useState(minutes);
+  // const [tim, setTime] = useState(time);
   const [timing, setTiming] = useState(0);
 
   const convertToSeconds = (minutes, seconds) => {
@@ -29,24 +24,24 @@ const Task = () => {
   };
 
   const countDown = () => {
-    let c_seconds = convertToSeconds(minutes, seconds);
+    let c_seconds = convertToSeconds(min, sec);
 
     if (c_seconds) {
-      seconds ? setSeconds({ seconds: seconds - 1 }) : setSeconds({ seconds: 59 });
+      sec ? setSeconds(seconds - 1) : setSeconds(59);
 
       if (c_seconds % 60 === 0 && minutes) {
-        setMinutes({ minutes: minutes - 1 });
+        setMinutes(minutes - 1);
       }
     } else {
       clearInterval(timing);
     }
     let data = JSON.parse(localStorage.getItem('task'));
-    if (label.length > 0) {
+    if (lab.length > 0) {
       data = data.map((value) => {
         return {
           ...value,
-          minutes,
-          seconds,
+          min,
+          sec,
         };
       });
     }
@@ -63,40 +58,32 @@ const Task = () => {
   };
 
   const resetTimer = () => {
-    setMinutes({
-      minutes: 0,
-    });
-    setSeconds({
-      seconds: 0,
-    });
+    setMinutes(0);
+    setSeconds(0);
     let data = JSON.parse(localStorage.getItem('task'));
     data = data.map((value) => {
       return {
         ...value,
-        minutes: 0,
-        seconds: 0,
+        min: 0,
+        sec: 0,
       };
     });
     localStorage.setItem('task', JSON.stringify(data));
   };
 
   const onChange = (e) => {
-    setLabel(() => {
-      return {
-        label: e.target.value,
-      };
-    });
+    setLabel(e.target.value);
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
     onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
-    if (label.length > 0) {
+    if (lab.length > 0) {
       data = data.map((value) => {
         return {
           ...value,
-          label: label,
+          lab: label,
           editing: false,
         };
       });
@@ -106,7 +93,7 @@ const Task = () => {
 
   const currentTime = Date.now();
 
-  const date = () => formatDistanceToNow(time, currentTime);
+  const date = formatDistanceToNow(time, currentTime);
 
   let classing = classNames({
     ' completed': completed,
@@ -118,13 +105,13 @@ const Task = () => {
       <div className="view">
         <input className="toggle" type="checkbox" onChange={stopInputTimer} />
         <div className="label">
-          <span className="description">{label}</span>
+          <span className="description">{lab}</span>
           <div className="timer">
             <button className="icon icon-play" onClick={startTimer} />
             <button className="icon icon-pause" onClick={stopButtonTimer} />
             <button className="icon icon-reset" onClick={resetTimer} />
             <span>
-              {minutes}:{seconds}
+              {min}:{sec}
             </span>
           </div>
           <span className="created">created {date} ago</span>
@@ -136,7 +123,7 @@ const Task = () => {
   } else {
     elem = (
       <form onSubmit={formSubmit}>
-        <input type="text" className="edit" defaultValue={label} onChange={(e) => onChange(e)} />
+        <input type="text" className="edit" defaultValue={lab} onChange={(e) => onChange(e)} />
       </form>
     );
   }

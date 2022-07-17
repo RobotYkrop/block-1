@@ -5,11 +5,11 @@ import TasksFiter from '../TasksFilter/TasksFiter';
 import { Context } from '../TodoContext/Context';
 
 const Footer = () => {
-  const { totalTask, filters, onChangeFilter, clearTask } = useContext(Context);
+  const { totalTask, clearTask } = useContext(Context);
   return (
     <footer className="footer">
       <span className="todo-count">{totalTask} tasks left</span>
-      <TasksFiter filter={filters} onChangeFilter={onChangeFilter} />
+      <TasksFiter />
       <button className="clear-completed" onClick={() => clearTask()}>
         Clear completed
       </button>

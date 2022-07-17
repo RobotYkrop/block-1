@@ -39,39 +39,25 @@ const App = () => {
 
   const addTask = (label, minutes, seconds) => {
     const newTask = createTask(label, minutes, seconds);
-    setItems((items) => {
-      const newArr = [...items, newTask];
-      localStorage.setItem('task', JSON.stringify(newArr));
-      return {
-        items: newArr,
-      };
-    });
+    const newArr = [...items, newTask];
+    localStorage.setItem('task', JSON.stringify(newArr));
+    setItems(newArr);
   };
 
   const deleteTask = (id) => {
-    setItems((items) => {
-      const idx = items.findIndex((el) => el.id === id);
-
-      const [...copyItems] = items;
-
-      copyItems.splice(idx, 1);
-      localStorage.setItem('task', JSON.stringify(copyItems));
-      return {
-        items: copyItems,
-      };
-    });
+    const idx = items.findIndex((el) => el.id === id);
+    const [...copyItems] = items;
+    copyItems.splice(idx, 1);
+    localStorage.setItem('task', JSON.stringify(copyItems));
+    setItems(copyItems);
   };
 
   const onEdit = (id) => {
-    setItems((items) => {
-      const idx = items.findIndex((el) => el.id === id);
-      const old = items[idx];
-      const newArr = { ...old, editing: !old.editing };
-      const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
-      return {
-        items: arr,
-      };
-    });
+    const idx = items.find((el) => el.id === id);
+    const old = items[idx];
+    const newArr = { ...old, editing: !old.editing };
+    const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
+    setItems(arr);
   };
 
   const onChangeFilter = (filter) => {
@@ -79,11 +65,8 @@ const App = () => {
   };
 
   const completedTask = (id) => {
-    setItems((items) => {
-      return {
-        items: toggleProperty(items, id, 'completed'),
-      };
-    });
+    const arr = toggleProperty(items, id, 'completed');
+    setItems(arr);
   };
 
   const filterTask = (items, filter) => {

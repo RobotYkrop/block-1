@@ -11,34 +11,26 @@ const NewTaskForm = () => {
   const [minutes, setMinutes] = useState('');
 
   const valueTask = (e) => {
-    setLabel({
-      label: e.target.value.replace(/^[ \t]+$/gm, ''),
-    });
+    setLabel(e.target.value.replace(/^[ \t]+$/gm, ''));
   };
 
-  const setTime = (e) => {
-    let value = e.target.value;
-    value = value.replace(/^[ \t]+$/gm, '');
-    this.setSeconds({
-      seconds: value,
-    });
-    this.setMinutes({
-      minutes: value,
-    });
+  const setSecondsTime = (e) => {
+    let value = e.target.value.replace(/^[ \t]+$/gm, '');
+    setSeconds(value);
     if (value <= 0) {
-      setSeconds({
-        seconds: (value = 0),
-      });
-      setMinutes({
-        minutes: (value = 0),
-      });
+      setSeconds(value <= 0);
     } else if (value >= 60) {
-      setSeconds({
-        seconds: (value = 60),
-      });
-      setMinutes({
-        minutes: (value = 60),
-      });
+      setSeconds((value = 60));
+    }
+  };
+
+  const setMinutesTime = (e) => {
+    let value = e.target.value.replace(/^[ \t]+$/gm, '');
+    setMinutes(value);
+    if (value <= 0) {
+      setMinutes(value <= 0);
+    } else if (value >= 60) {
+      setMinutes((value = 60));
     }
   };
 
@@ -46,15 +38,9 @@ const NewTaskForm = () => {
     e.preventDefault();
     if (label.length > 0) {
       addTask(label, seconds, minutes);
-      setLabel({
-        label: '',
-      });
-      setSeconds({
-        seconds: '',
-      });
-      setMinutes({
-        minutes: '',
-      });
+      setLabel('');
+      setSeconds('');
+      setMinutes('');
     }
   };
   return (
@@ -76,7 +62,7 @@ const NewTaskForm = () => {
           max={60}
           name="seconds"
           value={seconds}
-          onChange={setTime}
+          onChange={setSecondsTime}
           placeholder="Min"
         />
         <input
@@ -86,7 +72,7 @@ const NewTaskForm = () => {
           max={60}
           name="minutes"
           value={minutes}
-          onChange={setTime}
+          onChange={setMinutesTime}
           placeholder="Sec"
         />
       </form>
