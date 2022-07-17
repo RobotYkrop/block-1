@@ -1,67 +1,74 @@
-import './Task.css';
 import { formatDistanceToNow } from 'date-fns';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 
-export default class Task extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      label: this.props.label,
-      seconds: this.props.seconds,
-      minutes: this.props.minutes,
-      timing: 0,
-    };
-  }
+import './Task.css';
+import { Context } from '../TodoContext/Context';
 
-  convertToSeconds = (minutes, seconds) => {
+const Task = () => {
+  const { deleteTask, onEdit, completedTask, completed, editing, time } = useContext(Context);
+  const [label, setLabel] = useState({
+    // label: this.props.label,
+  });
+  const [seconds, setSeconds] = useState({
+    // seconds: this.props.seconds,
+  });
+  const [minutes, setMinutes] = useState({
+    // minutes: this.props.minutes,
+  });
+  const [timing, setTiming] = useState({
+    timing: 0,
+  });
+
+  const convertToSeconds = (minutes, seconds) => {
     return seconds + minutes * 60;
   };
 
-  startTimer = () => {
-    this.setState(() => {
-      return { timing: setInterval(this.countDown, 1000) };
+  const startTimer = () => {
+    setTiming(() => {
+      return { timing: setInterval(countDown, 1000) };
     });
   };
 
-  countDown = () => {
-    const { minutes, seconds, timing } = this.state;
-    let c_seconds = this.convertToSeconds(minutes, seconds);
+  const countDown = () => {
+    let c_seconds = convertToSeconds(minutes, seconds);
 
     if (c_seconds) {
-      seconds ? this.setState({ seconds: seconds - 1 }) : this.setState({ seconds: 59 });
+      seconds ? setSeconds({ seconds: seconds - 1 }) : setSeconds({ seconds: 59 });
 
       if (c_seconds % 60 === 0 && minutes) {
-        this.setState({ minutes: minutes - 1 });
+        setMinutes({ minutes: minutes - 1 });
       }
     } else {
       clearInterval(timing);
     }
     let data = JSON.parse(localStorage.getItem('task'));
-    if (this.state.label.length > 0) {
+    if (label.length > 0) {
       data = data.map((value) => {
         return {
           ...value,
-          minutes: this.state.minutes,
-          seconds: this.state.seconds,
+          minutes,
+          seconds,
         };
       });
     }
     localStorage.setItem('task', JSON.stringify(data));
   };
 
-  stopInputTimer = () => {
-    this.props.completedTask();
-    clearInterval(this.state.timing);
+  const stopInputTimer = () => {
+    completedTask();
+    clearInterval(timing);
   };
 
-  stopButtonTimer = () => {
-    clearInterval(this.state.timing);
+  const stopButtonTimer = () => {
+    clearInterval(timing);
   };
 
-  resetTimer = () => {
-    this.setState({
+  const resetTimer = () => {
+    setMinutes({
       minutes: 0,
+    });
+    setSeconds({
       seconds: 0,
     });
     let data = JSON.parse(localStorage.getItem('task'));
@@ -75,23 +82,23 @@ export default class Task extends React.Component {
     localStorage.setItem('task', JSON.stringify(data));
   };
 
-  onChange = (e) => {
-    this.setState(() => {
+  const onChange = (e) => {
+    setLabel(() => {
       return {
         label: e.target.value,
       };
     });
   };
 
-  formSubmit = (e) => {
+  const formSubmit = (e) => {
     e.preventDefault();
-    this.props.onEdit();
+    onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
-    if (this.state.label.length > 0) {
+    if (label.length > 0) {
       data = data.map((value) => {
         return {
           ...value,
-          label: this.state.label,
+          label: label,
           editing: false,
         };
       });
@@ -99,46 +106,43 @@ export default class Task extends React.Component {
     localStorage.setItem('task', JSON.stringify(data));
   };
 
-  render() {
-    const { deleteTask, onEdit, completed, editing, time } = this.props;
+  const currentTime = Date.now();
 
-    const { label, minutes, seconds } = this.state;
+  const date = formatDistanceToNow(time, currentTime);
 
-    const currentTime = Date.now();
-
-    const date = formatDistanceToNow(time, currentTime);
-    let classing = classNames({
-      ' completed': completed,
-      ' editing': editing,
-    });
-    let elem;
-    if (!editing) {
-      elem = (
-        <div className="view">
-          <input className="toggle" type="checkbox" onChange={this.stopInputTimer} />
-          <div className="label">
-            <span className="description">{label}</span>
-            <div className="timer">
-              <button className="icon icon-play" onClick={this.startTimer} />
-              <button className="icon icon-pause" onClick={this.stopButtonTimer} />
-              <button className="icon icon-reset" onClick={this.resetTimer} />
-              <span>
-                {minutes}:{seconds}
-              </span>
-            </div>
-            <span className="created">created {date} ago</span>
+  let classing = classNames({
+    ' completed': completed,
+    ' editing': editing,
+  });
+  let elem;
+  if (!editing) {
+    elem = (
+      <div className="view">
+        <input className="toggle" type="checkbox" onChange={stopInputTimer} />
+        <div className="label">
+          <span className="description">{label}</span>
+          <div className="timer">
+            <button className="icon icon-play" onClick={startTimer} />
+            <button className="icon icon-pause" onClick={stopButtonTimer} />
+            <button className="icon icon-reset" onClick={resetTimer} />
+            <span>
+              {minutes}:{seconds}
+            </span>
           </div>
-          <button className="icon icon-edit" onClick={onEdit} />
-          <button className="icon icon-destroy" onClick={deleteTask} />
+          <span className="created">created {date} ago</span>
         </div>
-      );
-    } else {
-      elem = (
-        <form onSubmit={this.formSubmit}>
-          <input type="text" className="edit" defaultValue={this.state.label} onChange={(e) => this.onChange(e)} />
-        </form>
-      );
-    }
-    return <div className={classing}>{elem}</div>;
+        <button className="icon icon-edit" onClick={onEdit} />
+        <button className="icon icon-destroy" onClick={deleteTask} />
+      </div>
+    );
+  } else {
+    elem = (
+      <form onSubmit={formSubmit}>
+        <input type="text" className="edit" defaultValue={label} onChange={(e) => onChange(e)} />
+      </form>
+    );
   }
-}
+  return <div className={classing}>{elem}</div>;
+};
+
+export default Task;

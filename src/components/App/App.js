@@ -1,23 +1,22 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import uuid from 'react-uuid';
 
 import AppHeader from '../AppHeader/AppHeader';
 import NewTaskForm from '../NewTaskForm/NewTaskForm';
 import Footer from '../Footer/Footer';
 import TaskList from '../TaskList/TaskList';
+import { Context } from '../TodoContext/Context';
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      items: [],
-      filter: 'all',
-      timer: 0,
-    };
-  }
+const App = () => {
+  const [items, setItems] = useState({
+    items: [],
+  });
+  const [filters, setFilter] = useState({
+    filter: 'all',
+  });
 
-  toggleProperty = (arr, id, prop) => {
+  const toggleProperty = (arr, id, prop) => {
     const idx = arr.findIndex((el) => el.id === id);
     const old = arr[idx];
 
@@ -26,12 +25,12 @@ export default class App extends React.Component {
     return [...arr.slice(0, idx), newArr, ...arr.slice(idx + 1)];
   };
 
-  componentDidMount() {
-    const items = JSON.parse(localStorage.getItem('task')) || [];
-    this.setState({ items });
-  }
+  useEffect(() => {
+    const state = JSON.parse(localStorage.getItem('task')) || [];
+    setItems({ state });
+  });
 
-  createTask = (label, minutes, seconds) => {
+  const createTask = (label, minutes, seconds) => {
     return {
       label,
       id: uuid(),
@@ -42,9 +41,9 @@ export default class App extends React.Component {
     };
   };
 
-  addTask = (label, minutes, seconds) => {
-    const newTask = this.createTask(label, minutes, seconds);
-    this.setState(({ items }) => {
+  const addTask = (label, minutes, seconds) => {
+    const newTask = createTask(label, minutes, seconds);
+    setItems(({ items }) => {
       const newArr = [...items, newTask];
       localStorage.setItem('task', JSON.stringify(newArr));
       return {
@@ -53,8 +52,8 @@ export default class App extends React.Component {
     });
   };
 
-  deleteTask = (id) => {
-    this.setState(({ items }) => {
+  const deleteTask = (id) => {
+    setItems(({ items }) => {
       const idx = items.findIndex((el) => el.id === id);
 
       const [...copyItems] = items;
@@ -67,8 +66,8 @@ export default class App extends React.Component {
     });
   };
 
-  onEdit = (id) => {
-    this.setState(({ items }) => {
+  const onEdit = (id) => {
+    setItems(({ items }) => {
       const idx = items.findIndex((el) => el.id === id);
       const old = items[idx];
       const newArr = { ...old, editing: !old.editing };
@@ -79,19 +78,19 @@ export default class App extends React.Component {
     });
   };
 
-  onChangeFilter = (filter) => {
-    this.setState({ filter });
+  const onChangeFilter = (filter) => {
+    setFilter({ filter });
   };
 
-  completedTask = (id) => {
-    this.setState(({ items }) => {
+  const completedTask = (id) => {
+    setItems(({ items }) => {
       return {
-        items: this.toggleProperty(items, id, 'completed'),
+        items: toggleProperty(items, id, 'completed'),
       };
     });
   };
 
-  filterTask(items, filter) {
+  const filterTask = (items, filter) => {
     switch (filter) {
       case 'all':
         return items;
@@ -102,54 +101,45 @@ export default class App extends React.Component {
       default:
         return items;
     }
-  }
-
-  clearTask = () => {
-    const items = this.state.items.filter((i) => !i.completed);
-    localStorage.setItem('task', JSON.stringify(items));
-    this.setState({ items });
   };
 
-  render() {
-    const { items, filter } = this.state;
+  const clearTask = () => {
+    const items = items.filter((i) => !i.completed);
+    localStorage.setItem('task', JSON.stringify(items));
+    setItems({ items });
+  };
 
-    const totalTask = items.length - items.filter((el) => el.completed).length;
+  const totalTask = () => {
+    return items.length - items.filter((el) => el.completed).length;
+  };
 
-    const visibleItems = this.filterTask(items, filter);
-    let emptyTask;
+  const visibleItems = filterTask(items, filters);
 
-    if (items.length === 0) {
-      emptyTask = <p className="emptyTask">Задач нет</p>;
-    } else {
-      emptyTask = (
-        <TaskList
-          items={visibleItems}
-          deleteTask={this.deleteTask}
-          completedTask={this.completedTask}
-          addTask={this.addTask}
-          onEdit={this.onEdit}
-          createTask={this.createTask}
-        />
-      );
-    }
-    return (
+  const ContextTodo = { items, deleteTask, completedTask, onEdit, createTask, addTask, visibleItems };
+
+  let emptyTask;
+
+  if (items.length === 0) {
+    emptyTask = <p className="emptyTask">Задач нет</p>;
+  } else {
+    emptyTask = <TaskList />;
+  }
+  return (
+    <Context.Provider value={ContextTodo}>
       <div>
         <section className="todoapp">
           <header className="header">
             <AppHeader />
-            <NewTaskForm addTask={this.addTask} />
+            <NewTaskForm addTask={addTask} />
           </header>
           <section className="main">
             {emptyTask}
-            <Footer
-              filter={filter}
-              totalTask={totalTask}
-              onChangeFilter={this.onChangeFilter}
-              clearTask={this.clearTask}
-            />
+            <Footer filter={filters} totalTask={totalTask} onChangeFilter={onChangeFilter} clearTask={clearTask} />
           </section>
         </section>
       </div>
-    );
-  }
-}
+    </Context.Provider>
+  );
+};
+
+export default App;
