@@ -6,9 +6,9 @@ import Task from '../Task/Task';
 import { Context } from '../TodoContext/Context';
 
 const TaskList = () => {
-  const { items, deleteTask, completedTask, onEdit } = useContext(Context);
+  const { visibleItems, deleteTask, completedTask, onEdit } = useContext(Context);
 
-  const el = Object.keys(items).map((item) => {
+  const el = visibleItems.map((item) => {
     const { id, ...label } = item;
     return (
       <div key={id} className="todo-list-item">
@@ -34,7 +34,6 @@ TaskList.propTypes = {
   onEdit: PropTypes.func,
   deleteTask: PropTypes.func,
   completedTask: PropTypes.func,
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default TaskList;

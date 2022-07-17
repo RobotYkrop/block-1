@@ -16,9 +16,7 @@ const Task = () => {
   const [minutes, setMinutes] = useState({
     // minutes: this.props.minutes,
   });
-  const [timing, setTiming] = useState({
-    timing: 0,
-  });
+  const [timing, setTiming] = useState(0);
 
   const convertToSeconds = (minutes, seconds) => {
     return seconds + minutes * 60;
@@ -26,7 +24,7 @@ const Task = () => {
 
   const startTimer = () => {
     setTiming(() => {
-      return { timing: setInterval(countDown, 1000) };
+      return setTiming(setInterval(countDown, 1000));
     });
   };
 
@@ -108,7 +106,7 @@ const Task = () => {
 
   const currentTime = Date.now();
 
-  const date = formatDistanceToNow(time, currentTime);
+  const date = () => formatDistanceToNow(time, currentTime);
 
   let classing = classNames({
     ' completed': completed,

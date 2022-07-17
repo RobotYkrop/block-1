@@ -6,15 +6,9 @@ import './NewTaskForm.css';
 const NewTaskForm = () => {
   const { addTask } = useContext(Context);
 
-  const [label, setLabel] = useState({
-    label: '',
-  });
-  const [seconds, setSeconds] = useState({
-    seconds: '',
-  });
-  const [minutes, setMinutes] = useState({
-    minutes: '',
-  });
+  const [label, setLabel] = useState('');
+  const [seconds, setSeconds] = useState('');
+  const [minutes, setMinutes] = useState('');
 
   const valueTask = (e) => {
     setLabel({

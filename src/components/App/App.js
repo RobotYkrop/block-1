@@ -9,12 +9,8 @@ import TaskList from '../TaskList/TaskList';
 import { Context } from '../TodoContext/Context';
 
 const App = () => {
-  const [items, setItems] = useState({
-    items: [],
-  });
-  const [filters, setFilter] = useState({
-    filter: 'all',
-  });
+  const [items, setItems] = useState([]);
+  const [filters, setFilter] = useState('all');
 
   const toggleProperty = (arr, id, prop) => {
     const idx = arr.findIndex((el) => el.id === id);
@@ -27,8 +23,8 @@ const App = () => {
 
   useEffect(() => {
     const state = JSON.parse(localStorage.getItem('task')) || [];
-    setItems({ state });
-  });
+    setItems(state);
+  }, []);
 
   const createTask = (label, minutes, seconds) => {
     return {
@@ -43,7 +39,7 @@ const App = () => {
 
   const addTask = (label, minutes, seconds) => {
     const newTask = createTask(label, minutes, seconds);
-    setItems(({ items }) => {
+    setItems((items) => {
       const newArr = [...items, newTask];
       localStorage.setItem('task', JSON.stringify(newArr));
       return {
@@ -53,7 +49,7 @@ const App = () => {
   };
 
   const deleteTask = (id) => {
-    setItems(({ items }) => {
+    setItems((items) => {
       const idx = items.findIndex((el) => el.id === id);
 
       const [...copyItems] = items;
@@ -67,7 +63,7 @@ const App = () => {
   };
 
   const onEdit = (id) => {
-    setItems(({ items }) => {
+    setItems((items) => {
       const idx = items.findIndex((el) => el.id === id);
       const old = items[idx];
       const newArr = { ...old, editing: !old.editing };
@@ -79,11 +75,11 @@ const App = () => {
   };
 
   const onChangeFilter = (filter) => {
-    setFilter({ filter });
+    setFilter(filter);
   };
 
   const completedTask = (id) => {
-    setItems(({ items }) => {
+    setItems((items) => {
       return {
         items: toggleProperty(items, id, 'completed'),
       };
@@ -104,18 +100,27 @@ const App = () => {
   };
 
   const clearTask = () => {
-    const items = items.filter((i) => !i.completed);
+    const item = items.filter((i) => !i.completed);
     localStorage.setItem('task', JSON.stringify(items));
-    setItems({ items });
+    setItems(item);
   };
 
-  const totalTask = () => {
-    return items.length - items.filter((el) => el.completed).length;
-  };
+  const totalTask = items.length - items.filter((el) => el.completed).length;
 
   const visibleItems = filterTask(items, filters);
 
-  const ContextTodo = { items, deleteTask, completedTask, onEdit, createTask, addTask, visibleItems };
+  const ContextTodo = {
+    deleteTask,
+    completedTask,
+    onEdit,
+    createTask,
+    addTask,
+    visibleItems,
+    totalTask,
+    filters,
+    onChangeFilter,
+    clearTask,
+  };
 
   let emptyTask;
 
@@ -134,7 +139,7 @@ const App = () => {
           </header>
           <section className="main">
             {emptyTask}
-            <Footer filter={filters} totalTask={totalTask} onChangeFilter={onChangeFilter} clearTask={clearTask} />
+            <Footer />
           </section>
         </section>
       </div>
