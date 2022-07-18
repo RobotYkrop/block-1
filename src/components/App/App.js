@@ -34,6 +34,8 @@ const App = () => {
       timing: {},
       minutes,
       seconds,
+      completed: false,
+      editing: false,
     };
   };
 
@@ -50,14 +52,6 @@ const App = () => {
     copyItems.splice(idx, 1);
     localStorage.setItem('task', JSON.stringify(copyItems));
     setItems(copyItems);
-  };
-
-  const onEdit = (id) => {
-    const idx = items.find((el) => el.id === id);
-    const old = items[idx];
-    const newArr = { ...old, editing: !old.editing };
-    const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
-    setItems(arr);
   };
 
   const onChangeFilter = (filter) => {
@@ -84,13 +78,53 @@ const App = () => {
 
   const clearTask = () => {
     const item = items.filter((i) => !i.completed);
-    localStorage.setItem('task', JSON.stringify(items));
+    localStorage.setItem('task', JSON.stringify(item));
     setItems(item);
   };
 
   const totalTask = items.length - items.filter((el) => el.completed).length;
 
   const visibleItems = filterTask(items, filters);
+
+  const completeTodo = (id) => {
+    let updatedTodos = items.map((todo) => {
+      localStorage.getItem('task', JSON.stringify(todo));
+      if (todo.id === id) {
+        todo.completed = !todo.completed;
+      }
+      localStorage.setItem('task', JSON.stringify([todo]));
+      return todo;
+    });
+    setItems(updatedTodos);
+  };
+
+  const onEdit = (id) => {
+    // setItems((prev) => {
+    //   return prev.map((item) => {
+    //     item.id === id ? id : item;
+    //   });
+    // });
+    let edit = items.map((todo) => {
+      localStorage.getItem('task', JSON.stringify(todo));
+      if (todo.id === id) {
+        todo.editing = !todo.editing;
+      }
+      localStorage.setItem('task', JSON.stringify([todo]));
+    });
+    setItems(edit);
+  };
+
+  // onEdit = (id) => {
+  //   this.setState(({ items }) => {
+  //     const idx = items.findIndex((el) => el.id === id);
+  //     const old = items[idx];
+  //     const newArr = { ...old, editing: !old.editing };
+  //     const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
+  //     return {
+  //       items: arr,
+  //     };
+  //   });
+  // };
 
   const ContextTodo = {
     deleteTask,
@@ -110,7 +144,7 @@ const App = () => {
   if (items.length === 0) {
     emptyTask = <p className="emptyTask">Задач нет</p>;
   } else {
-    emptyTask = <TaskList />;
+    emptyTask = <TaskList completeTodo={completeTodo} onEdit={onEdit} />;
   }
   return (
     <Context.Provider value={ContextTodo}>

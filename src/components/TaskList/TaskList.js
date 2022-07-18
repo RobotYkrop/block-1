@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import Task from '../Task/Task';
 import { Context } from '../TodoContext/Context';
 
-const TaskList = () => {
-  const { visibleItems, deleteTask, completedTask, onEdit } = useContext(Context);
+const TaskList = ({ completeTodo, onEdit }) => {
+  const { visibleItems, deleteTask } = useContext(Context);
 
   const el = visibleItems.map((item) => {
     const { id, ...label } = item;
@@ -15,7 +15,7 @@ const TaskList = () => {
         <Task
           {...label}
           deleteTask={() => deleteTask(id)}
-          completedTask={() => completedTask(id)}
+          completeTodo={() => completeTodo(id)}
           onEdit={() => onEdit(id)}
         />
       </div>

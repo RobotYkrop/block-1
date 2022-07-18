@@ -10,7 +10,7 @@ const Footer = () => {
     <footer className="footer">
       <span className="todo-count">{totalTask} tasks left</span>
       <TasksFiter />
-      <button className="clear-completed" onClick={() => clearTask()}>
+      <button className="clear-completed" onClick={clearTask}>
         Clear completed
       </button>
     </footer>
