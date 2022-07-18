@@ -5,8 +5,8 @@ import classNames from 'classnames';
 import './Task.css';
 
 const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTask, onEdit, editing }) => {
-  const [lab, setLabel] = useState(label);
-  const [edit, setEdit] = useState(label);
+  // const [lab, setLabel] = useState(label);
+  const [edit, setEdit] = useState('');
   // const [sec, setSeconds] = useState(seconds);
   // const [min, setMinutes] = useState(minutes);
   // const [tim, setTime] = useState(time);
@@ -71,16 +71,17 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTa
   // };
 
   const onChange = (e) => {
-    setLabel(e.target.value);
+    setEdit(e.target.value);
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
     onEdit(edit);
     let data = JSON.parse(localStorage.getItem('task'));
-    if (lab.length > 0) {
+    if (label.length > 0) {
       data = data.map((value) => {
-        setEdit(value);
+        setEdit(edit);
+        return { ...value };
       });
     }
     localStorage.setItem('task', JSON.stringify(data));
@@ -100,7 +101,7 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTa
       <li className="view">
         <input className="toggle" type="checkbox" onChange={completeTodo} />
         <div className="label">
-          <span className="description">{lab}</span>
+          <span className="description">{label}</span>
           <div className="timer">
             <button className="icon icon-play" />
             <button className="icon icon-pause" />
@@ -118,7 +119,7 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTa
   } else {
     elem = (
       <form onSubmit={formSubmit}>
-        <input type="text" className="edit" defaultValue={lab} onChange={(e) => onChange(e)} />
+        <input type="text" className="edit" defaultValue={label} onChange={(e) => onChange(e)} />
       </form>
     );
   }

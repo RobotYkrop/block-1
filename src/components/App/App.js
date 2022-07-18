@@ -82,10 +82,6 @@ const App = () => {
     setItems(item);
   };
 
-  const totalTask = items.length - items.filter((el) => el.completed).length;
-
-  const visibleItems = filterTask(items, filters);
-
   const completeTodo = (id) => {
     let updatedTodos = items.map((todo) => {
       localStorage.getItem('task', JSON.stringify(todo));
@@ -98,33 +94,34 @@ const App = () => {
     setItems(updatedTodos);
   };
 
-  const onEdit = (id) => {
-    // setItems((prev) => {
-    //   return prev.map((item) => {
-    //     item.id === id ? id : item;
-    //   });
-    // });
-    let edit = items.map((todo) => {
-      localStorage.getItem('task', JSON.stringify(todo));
-      if (todo.id === id) {
-        todo.editing = !todo.editing;
-      }
-      localStorage.setItem('task', JSON.stringify([todo]));
-    });
-    setItems(edit);
-  };
-
-  // onEdit = (id) => {
-  //   this.setState(({ items }) => {
-  //     const idx = items.findIndex((el) => el.id === id);
-  //     const old = items[idx];
-  //     const newArr = { ...old, editing: !old.editing };
-  //     const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
-  //     return {
-  //       items: arr,
-  //     };
+  // const onEdit = (id) => {
+  //   // setItems((prev) => {
+  //   //   return prev.map((item) => {
+  //   //     item.id === id ? id : item;
+  //   //   });
+  //   // });
+  //   let edit = items.map((todo) => {
+  //     localStorage.getItem('task', JSON.stringify(todo));
+  //     if (todo.id === id) {
+  //       todo.editing = !todo.editing;
+  //     }
+  //     localStorage.setItem('task', JSON.stringify([todo]));
   //   });
+  //   setItems(edit);
   // };
+
+  const totalTask = items.length - items.filter((el) => el.completed).length;
+
+  const visibleItems = filterTask(items, filters);
+
+  const onEdit = (id) => {
+    setItems((items) => {
+      const idx = items.findIndex((el) => el.id === id);
+      const old = items[idx];
+      const newArr = { ...old, editing: !old.editing };
+      return [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
+    });
+  };
 
   const ContextTodo = {
     deleteTask,
