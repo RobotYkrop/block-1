@@ -17,8 +17,8 @@ const NewTaskForm = () => {
   const setSecondsTime = (e) => {
     let value = e.target.value.replace(/^[ \t]+$/gm, '');
     setSeconds(value);
-    if (value <= 0) {
-      setSeconds(value <= 0);
+    if (value < 0) {
+      setSeconds(value < 0);
     } else if (value >= 60) {
       setSeconds((value = 60));
     }
@@ -27,8 +27,8 @@ const NewTaskForm = () => {
   const setMinutesTime = (e) => {
     let value = e.target.value.replace(/^[ \t]+$/gm, '');
     setMinutes(value);
-    if (value <= 0) {
-      setMinutes(value <= 0);
+    if (value < 0) {
+      setMinutes(value < 0);
     } else if (value >= 60) {
       setMinutes((value = 60));
     }
@@ -49,7 +49,6 @@ const NewTaskForm = () => {
         <input
           className="new-todo-form__task"
           placeholder="What needs to be done?"
-          autoFocus
           onChange={valueTask}
           value={label}
         />
@@ -60,7 +59,6 @@ const NewTaskForm = () => {
           type="number"
           min={0}
           max={60}
-          name="seconds"
           value={seconds}
           onChange={setSecondsTime}
           placeholder="Min"
@@ -70,7 +68,6 @@ const NewTaskForm = () => {
           type="number"
           min={0}
           max={60}
-          name="minutes"
           value={minutes}
           onChange={setMinutesTime}
           placeholder="Sec"

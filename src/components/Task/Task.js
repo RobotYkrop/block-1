@@ -1,87 +1,60 @@
 import { formatDistanceToNow } from 'date-fns';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames';
 
 import './Task.css';
+import { Context } from '../TodoContext/Context';
 
-const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTask, onEdit, editing }) => {
-  // const [lab, setLabel] = useState(label);
-  const [edit, setEdit] = useState('');
-  // const [sec, setSeconds] = useState(seconds);
-  // const [min, setMinutes] = useState(minutes);
-  // const [tim, setTime] = useState(time);
-  // const [timing, setTiming] = useState(0);
+const Task = ({ label, time, completeTodo, seconds, minutes, completed, onEdit, editing }) => {
+  const { deleteTask } = useContext(Context);
+  const [edit, setEdit] = useState(label);
+  const [paused, setPaused] = useState(true);
+  const [over, setOver] = useState(false);
+  const [[m, s], setTime] = useState([minutes, seconds]);
 
-  // const convertToSeconds = (minutes, seconds) => {
-  //   return seconds + minutes * 60;
-  // };
+  useEffect(() => {
+    const timerID = setInterval(() => tick(), 1000);
+    return () => clearInterval(timerID);
+  });
 
-  // const startTimer = () => {
-  //   setTiming(() => {
-  //     return setTiming(setInterval(countDown, 1000));
-  //   });
-  // };
-
-  // const countDown = () => {
-  //   let c_seconds = convertToSeconds(min, sec);
-
-  //   if (c_seconds) {
-  //     sec ? setSeconds(seconds - 1) : setSeconds(59);
-
-  //     if (c_seconds % 60 === 0 && minutes) {
-  //       setMinutes(minutes - 1);
-  //     }
-  //   } else {
-  //     clearInterval(timing);
-  //   }
-  //   let data = JSON.parse(localStorage.getItem('task'));
-  //   if (lab.length > 0) {
-  //     data = data.map((value) => {
-  //       return {
-  //         ...value,
-  //         min,
-  //         sec,
-  //       };
-  //     });
-  //   }
-  //   localStorage.setItem('task', JSON.stringify(data));
-  // };
-
-  // const stopInputTimer = () => {
-  //   completedTask();
-  //   clearInterval(timing);
-  // };
-
-  // const stopButtonTimer = () => {
-  //   clearInterval(timing);
-  // };
-
-  // const resetTimer = () => {
-  //   setMinutes(0);
-  //   setSeconds(0);
-  //   let data = JSON.parse(localStorage.getItem('task'));
-  //   data = data.map((value) => {
-  //     return {
-  //       ...value,
-  //       min: 0,
-  //       sec: 0,
-  //     };
-  //   });
-  //   localStorage.setItem('task', JSON.stringify(data));
-  // };
-
+  const tick = () => {
+    if (paused || over) return;
+    if (m === 0 && s === 0) {
+      setOver(true);
+      setTime([59, 59]);
+    } else if (s == 0) {
+      setTime([m - 1, 59]);
+    } else {
+      setTime([m, s - 1]);
+    }
+    let data = JSON.parse(localStorage.getItem('task'));
+    if (edit.length > 0) {
+      data = data.map((value) => {
+        return {
+          ...value,
+          minutes: m,
+          seconds: s - 1,
+        };
+      });
+    }
+    localStorage.setItem('task', JSON.stringify(data));
+  };
+  const reset = () => {
+    setTime([0, 0]);
+    setPaused(false);
+    setOver(false);
+  };
   const onChange = (e) => {
     setEdit(e.target.value);
   };
 
   const formSubmit = (e) => {
     e.preventDefault();
-    onEdit(edit);
+    onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
     if (label.length > 0) {
       data = data.map((value) => {
-        setEdit(edit);
-        return { ...value };
+        return { ...value, label: edit };
       });
     }
     localStorage.setItem('task', JSON.stringify(data));
@@ -99,16 +72,17 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTa
   if (!editing) {
     elem = (
       <li className="view">
-        <input className="toggle" type="checkbox" onChange={completeTodo} />
+        <input className="toggle" type="checkbox" onChange={completeTodo} checked={completed} />
         <div className="label">
-          <span className="description">{label}</span>
+          <span className="description">{edit}</span>
           <div className="timer">
-            <button className="icon icon-play" />
-            <button className="icon icon-pause" />
-            <button className="icon icon-reset" />
-            <span>
-              {minutes}:{seconds}
-            </span>
+            {paused ? (
+              <button className="icon icon-play" onClick={() => setPaused(!paused)} />
+            ) : (
+              <button className="icon icon-pause" onClick={() => setPaused(!paused)} />
+            )}
+            <button className="icon icon-reset" onClick={() => reset()} />
+            <p>{over ? 'Times up!' : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</p>
           </div>
           <span className="created">created {date} ago</span>
         </div>
@@ -119,7 +93,7 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, deleteTa
   } else {
     elem = (
       <form onSubmit={formSubmit}>
-        <input type="text" className="edit" defaultValue={label} onChange={(e) => onChange(e)} />
+        <input type="text" className="edit" defaultValue={edit} onChange={(e) => onChange(e)} />
       </form>
     );
   }

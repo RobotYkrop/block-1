@@ -12,15 +12,6 @@ const App = () => {
   const [items, setItems] = useState([]);
   const [filters, setFilter] = useState('all');
 
-  const toggleProperty = (arr, id, prop) => {
-    const idx = arr.findIndex((el) => el.id === id);
-    const old = arr[idx];
-
-    const newArr = { ...old, [prop]: !old[prop] };
-
-    return [...arr.slice(0, idx), newArr, ...arr.slice(idx + 1)];
-  };
-
   useEffect(() => {
     const state = JSON.parse(localStorage.getItem('task')) || [];
     setItems(state);
@@ -35,7 +26,6 @@ const App = () => {
       minutes,
       seconds,
       completed: false,
-      editing: false,
     };
   };
 
@@ -56,11 +46,6 @@ const App = () => {
 
   const onChangeFilter = (filter) => {
     setFilter(filter);
-  };
-
-  const completedTask = (id) => {
-    const arr = toggleProperty(items, id, 'completed');
-    setItems(arr);
   };
 
   const filterTask = (items, filter) => {
@@ -94,22 +79,6 @@ const App = () => {
     setItems(updatedTodos);
   };
 
-  // const onEdit = (id) => {
-  //   // setItems((prev) => {
-  //   //   return prev.map((item) => {
-  //   //     item.id === id ? id : item;
-  //   //   });
-  //   // });
-  //   let edit = items.map((todo) => {
-  //     localStorage.getItem('task', JSON.stringify(todo));
-  //     if (todo.id === id) {
-  //       todo.editing = !todo.editing;
-  //     }
-  //     localStorage.setItem('task', JSON.stringify([todo]));
-  //   });
-  //   setItems(edit);
-  // };
-
   const totalTask = items.length - items.filter((el) => el.completed).length;
 
   const visibleItems = filterTask(items, filters);
@@ -125,7 +94,6 @@ const App = () => {
 
   const ContextTodo = {
     deleteTask,
-    completedTask,
     onEdit,
     createTask,
     addTask,
@@ -149,7 +117,7 @@ const App = () => {
         <section className="todoapp">
           <header className="header">
             <AppHeader />
-            <NewTaskForm addTask={addTask} />
+            <NewTaskForm />
           </header>
           <section className="main">
             {emptyTask}
