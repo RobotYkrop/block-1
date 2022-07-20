@@ -22,14 +22,13 @@ const App = () => {
       label,
       id: uuid(),
       time: Date.now(),
-      timing: {},
       minutes,
       seconds,
       completed: false,
     };
   };
 
-  const addTask = (label, minutes, seconds) => {
+  const addTask = (label, minutes = 0, seconds = 0) => {
     const newTask = createTask(label, minutes, seconds);
     const newArr = [...items, newTask];
     localStorage.setItem('task', JSON.stringify(newArr));

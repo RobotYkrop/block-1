@@ -10,7 +10,7 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, onEdit, 
   const [edit, setEdit] = useState(label);
   const [paused, setPaused] = useState(true);
   const [over, setOver] = useState(false);
-  const [[m, s], setTime] = useState([minutes, seconds]);
+  const [[m = 0, s = 0], setTime] = useState([minutes, seconds]);
 
   useEffect(() => {
     const timerID = setInterval(() => tick(), 1000);
@@ -42,7 +42,6 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, onEdit, 
   const reset = () => {
     setTime([0, 0]);
     setPaused(false);
-    setOver(false);
   };
   const onChange = (e) => {
     setEdit(e.target.value);
@@ -99,5 +98,8 @@ const Task = ({ label, time, completeTodo, seconds, minutes, completed, onEdit, 
   }
   return <ul className={classing}>{elem}</ul>;
 };
-
+Task.defaultProps = {
+  seconds: 0,
+  minutes: 0,
+};
 export default Task;

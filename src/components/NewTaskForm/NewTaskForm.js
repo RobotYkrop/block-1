@@ -7,8 +7,8 @@ const NewTaskForm = () => {
   const { addTask } = useContext(Context);
 
   const [label, setLabel] = useState('');
-  const [seconds, setSeconds] = useState('');
-  const [minutes, setMinutes] = useState('');
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
 
   const valueTask = (e) => {
     setLabel(e.target.value.replace(/^[ \t]+$/gm, ''));
@@ -17,8 +17,8 @@ const NewTaskForm = () => {
   const setSecondsTime = (e) => {
     let value = e.target.value.replace(/^[ \t]+$/gm, '');
     setSeconds(value);
-    if (value < 0) {
-      setSeconds(value < 0);
+    if (value <= 0) {
+      setSeconds((value = 0));
     } else if (value >= 60) {
       setSeconds((value = 60));
     }
@@ -27,8 +27,8 @@ const NewTaskForm = () => {
   const setMinutesTime = (e) => {
     let value = e.target.value.replace(/^[ \t]+$/gm, '');
     setMinutes(value);
-    if (value < 0) {
-      setMinutes(value < 0);
+    if (value <= 0) {
+      setMinutes((value = 0));
     } else if (value >= 60) {
       setMinutes((value = 60));
     }
@@ -76,5 +76,8 @@ const NewTaskForm = () => {
     </div>
   );
 };
-
+NewTaskForm.defaultProps = {
+  seconds: 0,
+  minutes: 0,
+};
 export default NewTaskForm;
