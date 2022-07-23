@@ -28,7 +28,7 @@ const App = () => {
     };
   };
 
-  const addTask = (label, minutes = 0, seconds = 0) => {
+  const addTask = (label, minutes, seconds) => {
     const newTask = createTask(label, minutes, seconds);
     const newArr = [...items, newTask];
     localStorage.setItem('task', JSON.stringify(newArr));

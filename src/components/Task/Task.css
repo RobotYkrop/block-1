@@ -129,8 +129,6 @@ ul {
   position: absolute;
   top: 0;
   bottom: 0px;
-  width: 30px;
-  height: 40px;
   font-size: 34px;
   color: #cc9a9a;
   margin: auto 0 11px;
@@ -163,9 +161,7 @@ ul {
 .todo-list li .icon-play,
 .todo-list li .icon-reset {
   font-size: 18px;
-  width: 18px;
   height: 18px;
-  bottom: -5px;
 }
 
 .todo-list li .icon-pause {
