@@ -1,115 +1,70 @@
+import './Task.css';
 import { formatDistanceToNow } from 'date-fns';
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
-import './Task.css';
-import { Context } from '../TodoContext/Context';
-
-const Task = ({ label, time, completeTodo, seconds, minutes, completed, onEdit, editing }) => {
-  const { deleteTask } = useContext(Context);
-  const [edit, setEdit] = useState(label);
-  const [paused, setPaused] = useState(true);
-  const [over, setOver] = useState(false);
-  const [[m, s], setTime] = useState([minutes, seconds]);
-
-  useEffect(() => {
-    const timerID = setInterval(() => tick(), 1000);
-    return () => {
-      clearInterval(timerID);
+export default class Task extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      label: this.props.label,
     };
-  });
+  }
 
-  const setStorageTime = () => {
+  onChange = (e) => {
+    this.setState(() => {
+      return {
+        label: e.target.value,
+      };
+    });
+  };
+
+  formSubmit = (e) => {
+    e.preventDefault();
+    this.props.onEdit();
     let data = JSON.parse(localStorage.getItem('task'));
-    if (edit.length > 0) {
+    if (this.state.label.length > 0) {
       data = data.map((value) => {
         return {
           ...value,
-          minutes: m,
-          seconds: s,
+          label: this.state.label,
+          editing: false,
         };
       });
     }
     localStorage.setItem('task', JSON.stringify(data));
   };
-  const tick = () => {
-    if (paused || over) return;
-    if (m === 0 && s === 0) {
-      setOver(true);
-      setTime([60, 60]);
-    } else if (s == 0) {
-      setTime([m - 1, 60]);
-    } else {
-      setTime([m, s - 1]);
-    }
-    setStorageTime();
-  };
-  const reset = () => {
-    setTime([parseInt(minutes), parseInt(seconds)]);
-    setPaused(true);
-    setStorageTime();
-  };
 
-  const onChange = (e) => {
-    setEdit(e.target.value);
-  };
+  render() {
+    const { deleteTask, completedTask, onEdit, completed, editing, time } = this.props;
+    const currentTime = Date.now();
 
-  // Не могу понять, на сколько это правильно
-
-  const escFunction = useCallback((e) => {
-    if (e.keyCode === 27 || e.keyCode === 13) {
-      onEdit();
-      let data = JSON.parse(localStorage.getItem('task'));
-      if (label.length > 0) {
-        data = data.map((value) => {
-          return { ...value, label: edit };
-        });
-      }
-      localStorage.setItem('task', JSON.stringify(data));
-    }
-  });
-
-  const currentTime = Date.now();
-
-  const date = formatDistanceToNow(time, currentTime);
-
-  let classing = classNames({
-    completed: completed ? true : false,
-    ' editing': editing,
-  });
-  let elem;
-  if (!editing) {
-    elem = (
-      <li className="view">
-        <input className="toggle" type="checkbox" onChange={completeTodo} checked={completed} />
-        <div className="label">
-          <span className="description">{edit}</span>
-          <div className="timer">
-            {paused ? (
-              <button className="icon icon-play" onClick={() => setPaused(!paused)} />
-            ) : (
-              <button className="icon icon-pause" onClick={() => setPaused(!paused)} />
-            )}
-            <button className="icon icon-reset" onClick={() => reset()} />
-            <p>{over ? '00:00' : `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`}</p>
-          </div>
-          <span className="created">created {date} ago</span>
+    const date = formatDistanceToNow(time, currentTime);
+    let classing = classNames({
+      ' completed': completed,
+      ' editing': editing,
+    });
+    let elem;
+    if (!editing) {
+      elem = (
+        <div className="view">
+          <input className="toggle" type="checkbox" onChange={completedTask} />
+          <label>
+            <span className="description">{this.state.label}</span>
+            <span className="created">created {date} ago</span>
+          </label>
+          <button className="icon icon-edit" onClick={onEdit} />
+          <button className="icon icon-destroy" onClick={deleteTask} />
         </div>
-        <button className="icon icon-edit" onClick={onEdit} />
-        <button className="icon icon-destroy" onClick={deleteTask} />
-      </li>
-    );
-  } else {
-    elem = (
-      <form onKeyDown={escFunction}>
-        <input type="text" className="edit" autoFocus defaultValue={edit} onChange={(e) => onChange(e)} />
-      </form>
-    );
+      );
+    } else {
+      elem = (
+        <form onSubmit={this.formSubmit}>
+          <input type="text" className="edit" defaultValue={this.state.label} onChange={(e) => this.onChange(e)} />
+        </form>
+      );
+    }
+
+    return <div className={classing}>{elem}</div>;
   }
-  return <ul className={classing}>{elem}</ul>;
-};
-Task.defaultProps = {
-  seconds: 0,
-  minutes: 0,
-};
-export default Task;
+}

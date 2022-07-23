@@ -1,20 +1,26 @@
 import './Footer.css';
-import { useContext } from 'react';
+import PropTypes from 'prop-types';
 
 import TasksFiter from '../TasksFilter/TasksFiter';
-import { Context } from '../TodoContext/Context';
 
-const Footer = () => {
-  const { totalTask, clearTask } = useContext(Context);
+const Footer = ({ totalTask, filter, onChangeFilter, clearTask }) => {
   return (
     <footer className="footer">
       <span className="todo-count">{totalTask} tasks left</span>
-      <TasksFiter />
-      <button className="clear-completed" onClick={clearTask}>
+      <TasksFiter filter={filter} onChangeFilter={onChangeFilter} />
+      <button className="clear-completed" onClick={() => clearTask()}>
         Clear completed
       </button>
     </footer>
   );
+};
+
+Footer.defaultProps = {
+  totalTask: 0,
+};
+
+Footer.propTypes = {
+  totalTask: PropTypes.number,
 };
 
 export default Footer;
