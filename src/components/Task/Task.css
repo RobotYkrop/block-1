@@ -142,6 +142,8 @@ ul {
 
 .icon-destroy {
   right: 10px;
+  bottom: 55px;
+  height: 5px;
 }
 
 .icon-destroy:after {
@@ -151,6 +153,8 @@ ul {
 .icon-edit {
   font-size: 19px;
   right: 45px;
+  bottom: 50px;
+  height: 5px;
 }
 
 .icon-edit:after {
@@ -161,7 +165,8 @@ ul {
 .todo-list li .icon-play,
 .todo-list li .icon-reset {
   font-size: 18px;
-  height: 18px;
+  height: 5px;
+  bottom: 10px;
 }
 
 .todo-list li .icon-pause {
@@ -181,6 +186,7 @@ ul {
 
 .icon-play:after {
   content: '▶';
+  width: 5px;
 }
 
 .edit {
