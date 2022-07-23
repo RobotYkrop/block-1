@@ -1,41 +1,76 @@
+import React, { useContext, useState } from 'react';
+
+import { Context } from '../TodoContext/Context';
 import './NewTaskForm.css';
-import React from 'react';
 
-export default class NewTaskForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      label: '',
-    };
-  }
+const NewTaskForm = () => {
+  const { addTask } = useContext(Context);
 
-  valueTask = (e) => {
-    this.setState({
-      label: e.target.value.replace(/^[ \t]+$/gm, ''),
-    });
+  const [label, setLabel] = useState('');
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+
+  const valueTask = (e) => {
+    setLabel(e.target.value.replace(/^[ \t]+$/gm, ''));
   };
 
-  onSubmit = (e) => {
-    e.preventDefault();
-    if (this.state.label.length > 0) {
-      this.props.addTask(this.state.label);
-      this.setState({
-        label: '',
-      });
+  const setSecondsTime = (e) => {
+    let value = e.target.value.replace(/^[ \t]+$/gm, '');
+    setSeconds(value);
+    if (value < 0) {
+      setSeconds((value = 0));
+    } else if (value >= 60) {
+      setSeconds((value = 60));
     }
   };
 
-  render() {
-    return (
-      <form onSubmit={this.onSubmit}>
+  const setMinutesTime = (e) => {
+    let value = e.target.value.replace(/^[ \t]+$/gm, '');
+    setMinutes(value);
+    if (value < 0) {
+      setMinutes((value = 0));
+    } else if (value >= 60) {
+      setMinutes((value = 60));
+    }
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (label.length > 0) {
+      addTask(label, seconds, minutes);
+      setLabel('');
+      setSeconds(0);
+      setMinutes(0);
+    }
+  };
+  return (
+    <div className="new-todo-block">
+      <form className="new-todo-form" onSubmit={onSubmit}>
         <input
-          className="new-todo"
+          className="new-todo-form__task"
           placeholder="What needs to be done?"
-          autoFocus
-          onChange={this.valueTask}
-          value={this.state.label}
+          onChange={valueTask}
+          value={label}
         />
       </form>
-    );
-  }
-}
+      <form className="new-todo-block__timer">
+        <input
+          className="new-todo-form__timer"
+          type="number"
+          value={seconds}
+          onChange={setSecondsTime}
+          placeholder="Min"
+        />
+        <input
+          className="new-todo-form__timer"
+          type="number"
+          value={minutes}
+          onChange={setMinutesTime}
+          placeholder="Sec"
+        />
+      </form>
+    </div>
+  );
+};
+
+export default NewTaskForm;

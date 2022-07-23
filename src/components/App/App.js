@@ -1,93 +1,53 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import uuid from 'react-uuid';
 
 import AppHeader from '../AppHeader/AppHeader';
 import NewTaskForm from '../NewTaskForm/NewTaskForm';
 import Footer from '../Footer/Footer';
 import TaskList from '../TaskList/TaskList';
+import { Context } from '../TodoContext/Context';
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      items: [],
-      filter: 'all',
-    };
-  }
+const App = () => {
+  const [items, setItems] = useState([]);
+  const [filters, setFilter] = useState('all');
 
-  toggleProperty = (arr, id, prop) => {
-    const idx = arr.findIndex((el) => el.id === id);
-    const old = arr[idx];
+  useEffect(() => {
+    const state = JSON.parse(localStorage.getItem('task')) || [];
+    setItems(state);
+  }, []);
 
-    const newArr = { ...old, [prop]: !old[prop] };
-
-    return [...arr.slice(0, idx), newArr, ...arr.slice(idx + 1)];
-  };
-
-  createTask = (label) => {
+  const createTask = (label, minutes, seconds) => {
     return {
       label,
       id: uuid(),
       time: Date.now(),
+      minutes,
+      seconds,
+      completed: false,
     };
   };
 
-  componentDidMount() {
-    const items = JSON.parse(localStorage.getItem('task')) || [];
-    this.setState({ items });
-  }
-
-  addTask = (label) => {
-    const newTask = this.createTask(label);
-    this.setState(({ items }) => {
-      const newArr = [...items, newTask];
-      localStorage.setItem('task', JSON.stringify(newArr));
-      return {
-        items: newArr,
-      };
-    });
+  const addTask = (label, minutes, seconds) => {
+    const newTask = createTask(label, minutes, seconds);
+    const newArr = [...items, newTask];
+    localStorage.setItem('task', JSON.stringify(newArr));
+    setItems(newArr);
   };
 
-  deleteTask = (id) => {
-    this.setState(({ items }) => {
-      const idx = items.findIndex((el) => el.id === id);
-
-      const [...copyItems] = items;
-
-      copyItems.splice(idx, 1);
-      localStorage.setItem('task', JSON.stringify(copyItems));
-      return {
-        items: copyItems,
-      };
-    });
+  const deleteTask = (id) => {
+    const idx = items.findIndex((el) => el.id === id);
+    const [...copyItems] = items;
+    copyItems.splice(idx, 1);
+    localStorage.setItem('task', JSON.stringify(copyItems));
+    setItems(copyItems);
   };
 
-  onEdit = (id) => {
-    this.setState(({ items }) => {
-      const idx = items.findIndex((el) => el.id === id);
-      const old = items[idx];
-      const newArr = { ...old, editing: !old.editing };
-      const arr = [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
-      return {
-        items: arr,
-      };
-    });
+  const onChangeFilter = (filter) => {
+    setFilter(filter);
   };
 
-  onChangeFilter = (filter) => {
-    this.setState({ filter });
-  };
-
-  completedTask = (id) => {
-    this.setState(({ items }) => {
-      return {
-        items: this.toggleProperty(items, id, 'completed'),
-      };
-    });
-  };
-
-  filterTask(items, filter) {
+  const filterTask = (items, filter) => {
     switch (filter) {
       case 'all':
         return items;
@@ -98,54 +58,74 @@ export default class App extends React.Component {
       default:
         return items;
     }
-  }
-
-  clearTask = () => {
-    const items = this.state.items.filter((i) => !i.completed);
-    localStorage.setItem('task', JSON.stringify(items));
-    this.setState({ items });
   };
 
-  render() {
-    const { items, filter } = this.state;
+  const clearTask = () => {
+    const item = items.filter((i) => !i.completed);
+    localStorage.setItem('task', JSON.stringify(item));
+    setItems(item);
+  };
 
-    const totalTask = items.length - items.filter((el) => el.completed).length;
+  const completeTodo = (id) => {
+    let updatedTodos = items.map((todo) => {
+      localStorage.getItem('task', JSON.stringify(todo));
+      if (todo.id === id) {
+        todo.completed = !todo.completed;
+      }
+      localStorage.setItem('task', JSON.stringify([todo]));
+      return todo;
+    });
+    setItems(updatedTodos);
+  };
 
-    const visibleItems = this.filterTask(items, filter);
-    let emptyTask;
+  const totalTask = items.length - items.filter((el) => el.completed).length;
 
-    if (items.length === 0) {
-      emptyTask = <p className="emptyTask">Задач нет</p>;
-    } else {
-      emptyTask = (
-        <TaskList
-          items={visibleItems}
-          deleteTask={this.deleteTask}
-          completedTask={this.completedTask}
-          addTask={this.addTask}
-          onEdit={this.onEdit}
-          createTask={this.createTask}
-        />
-      );
-    }
-    return (
+  const visibleItems = filterTask(items, filters);
+
+  const onEdit = (id) => {
+    setItems((items) => {
+      const idx = items.findIndex((el) => el.id === id);
+      const old = items[idx];
+      const newArr = { ...old, editing: !old.editing };
+      return [...items.slice(0, idx), newArr, ...items.slice(idx + 1)];
+    });
+  };
+
+  const ContextTodo = {
+    deleteTask,
+    onEdit,
+    createTask,
+    addTask,
+    visibleItems,
+    totalTask,
+    filters,
+    onChangeFilter,
+    clearTask,
+  };
+
+  let emptyTask;
+
+  if (items.length === 0) {
+    emptyTask = <p className="emptyTask">Задач нет</p>;
+  } else {
+    emptyTask = <TaskList completeTodo={completeTodo} onEdit={onEdit} />;
+  }
+  return (
+    <Context.Provider value={ContextTodo}>
       <div>
         <section className="todoapp">
           <header className="header">
             <AppHeader />
-            <NewTaskForm addTask={this.addTask} />
+            <NewTaskForm />
           </header>
           <section className="main">
             {emptyTask}
-            <Footer
-              filter={filter}
-              totalTask={totalTask}
-              onChangeFilter={this.onChangeFilter}
-              clearTask={this.clearTask}
-            />
+            <Footer />
           </section>
         </section>
       </div>
-    );
-  }
-}
+    </Context.Provider>
+  );
+};
+
+export default App;
