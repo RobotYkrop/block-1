@@ -1,7 +1,5 @@
-import React, { useContext } from 'react';
-
 import './TasksFilter.css';
-import { Context } from '../TodoContext/Context';
+import React from 'react';
 
 export const Actions = {
   ALL: 'All',
@@ -9,23 +7,28 @@ export const Actions = {
   COMPLETED: 'Completed',
 };
 
-const TasksFilter = () => {
-  const { filters, onChangeFilter } = useContext(Context);
-  let buttons = [
-    { name: 'all', label: 'All' },
-    { name: 'active', label: 'Active' },
-    { name: 'completed', label: 'Completed' },
-  ];
+export default class TasksFiter extends React.Component {
+  constructor() {
+    super();
+    this.buttons = [
+      { name: 'all', label: 'All' },
+      { name: 'active', label: 'Active' },
+      { name: 'completed', label: 'Completed' },
+    ];
+  }
 
-  const Buttons = buttons.map(({ name, label }) => {
-    filters === Actions;
-    return (
-      <li key={name} onClick={() => onChangeFilter(name)}>
-        <button>{label}</button>
-      </li>
-    );
-  });
-  return <ul className="filters">{Buttons}</ul>;
-};
+  render() {
+    const { filter, onChangeFilter } = this.props;
 
-export default TasksFilter;
+    const buttons = this.buttons.map(({ name, label }) => {
+      filter === Actions;
+      return (
+        <li key={name} onClick={() => onChangeFilter(name)}>
+          <button>{label}</button>
+        </li>
+      );
+    });
+
+    return <ul className="filters">{buttons}</ul>;
+  }
+}
